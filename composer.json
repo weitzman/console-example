@@ -15,6 +15,7 @@
     ],
     "require": {
         "php": "^8.2",
+        "consolidation/output-formatters": "^4",
         "symfony/console": "^7.0",
         "symfony/dependency-injection": "^7.0",
         "symfony/config": "^7.0",

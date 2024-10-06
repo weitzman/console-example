@@ -7,13 +7,13 @@ namespace App\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-final readonly class ConfirmEnvironmentAttribute
+final readonly class ForbidEnvironment
 {
     public string $message;
 
     public function __construct(
         public string $env,
-        string $message = 'Do you want to run the command in {{env}} environment.',
+        string $message = 'This command is not allowed in {{env}} environment.',
     ) {
         $this->message = str_replace('{{env}}', $env, $message);
     }

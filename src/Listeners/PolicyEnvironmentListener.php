@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Listeners;
+namespace App\Listeners;
 
-use App\Attribute\ConfirmEnvironmentAttribute;
-use App\Attribute\ForbidEnvironmentAttribute;
-use Symfony\Component\Console\Command\Command;
+use App\Attribute\ConfirmEnvironment;
+use App\Attribute\ForbidEnvironment;
+use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-final readonly class ControlExecutionOnCommandListener
+#[AsEventListener(event: ConsoleEvents::COMMAND)]
+final readonly class PolicyEnvironmentListener
 {
     public function __construct(
         private string $env,
@@ -23,10 +25,10 @@ final readonly class ControlExecutionOnCommandListener
         $command = $event->getCommand();
         $reflection = new \ReflectionObject($command);
 
-        $attributes = $reflection->getAttributes(ForbidEnvironmentAttribute::class);
+        $attributes = $reflection->getAttributes(ForbidEnvironment::class);
 
         foreach ($attributes as $attribute) {
-            /** @var ForbidEnvironmentAttribute $forbidEnvironment */
+            /** @var ForbidEnvironment $forbidEnvironment */
             $forbidEnvironment = $attribute->newInstance();
 
             if ($forbidEnvironment->env !== $this->env) {
@@ -34,13 +36,14 @@ final readonly class ControlExecutionOnCommandListener
             }
 
             $io->error($forbidEnvironment->message);
-            exit(Command::FAILURE);
+            $event->disableCommand();
+            return;
         }
 
-        $attributes = $reflection->getAttributes(ConfirmEnvironmentAttribute::class);
+        $attributes = $reflection->getAttributes(ConfirmEnvironment::class);
 
         foreach ($attributes as $attribute) {
-            /** @var ConfirmEnvironmentAttribute $confirmEnvironment */
+            /** @var ConfirmEnvironment $confirmEnvironment */
             $confirmEnvironment = $attribute->newInstance();
 
             if ($confirmEnvironment->env !== $this->env) {
@@ -51,7 +54,8 @@ final readonly class ControlExecutionOnCommandListener
 
             if (!$confirm) {
                 $io->info('User cancelled the operation.');
-                exit(Command::SUCCESS);
+                $event->disableCommand();
+                return;
             }
         }
     }
