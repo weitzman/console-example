@@ -1,5 +1,7 @@
 ### Experiments for Drush 14
 
+[This blog post](https://medium.com/@fernando_28520/extend-your-symfony-console-app-with-events-and-attributes-ca8ec6321430) was an inspiration for the approach here.
+
 A Console app which explores moving on from AnnotatedCommand in favor of more native use of Console. It currently implements a single command - `bin/console.php user:information --help`
    1. HookManager replaced by regular EventDispatcher and Listeners
    1. Argument and Option default values are provided by Attribute
