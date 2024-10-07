@@ -45,7 +45,6 @@ final class FormatListener {
   protected function getPrivatePropValue(mixed $object, $name): mixed {
     $rc = new \ReflectionClass($object);
     $prop = $rc->getProperty($name);
-    $prop->setAccessible(true);
     return $prop->getValue($object);
   }
 
