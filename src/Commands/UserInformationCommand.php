@@ -6,6 +6,9 @@ namespace App\Commands;
 
 use App\Attribute\Argument;
 use App\Attribute\ConfirmEnvironment;
+use App\Attribute\DefaultTableFields;
+use App\Attribute\FieldLabels;
+use App\Attribute\FilterDefaultField;
 use App\Attribute\ForbidEnvironment;
 use App\Attribute\Format;
 use App\Attribute\Option;
@@ -27,6 +30,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 // @todo Send table default fields to formatter.
 #[Format(type: RowsOfFields::class, default: 'table')]
 #[OptionsetGetEditor]
+#[FieldLabels(labels: ['name' => 'Name', 'color' => 'Color'])]
+#[DefaultTableFields(fields: ['name', 'color'])]
+#[FilterDefaultField(field: 'name')]
 #[ConfirmEnvironment('dev')]
 #[ForbidEnvironment('prod')]
 // @todo Deal with usages, topics.
@@ -37,7 +43,7 @@ class UserInformationCommand extends Command {
   public function execute(InputInterface $input, OutputInterface $output): int
   {
     $data = new RowsOfFields([['name' => 'apple', 'color' => 'red']]);
-    $this->format($output, $data, $input->getOption('format'));
+    $this->format($output, $input, $data, $input->getOption('format'));
     return Command::SUCCESS;
   }
 }

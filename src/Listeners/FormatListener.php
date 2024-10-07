@@ -6,13 +6,15 @@ namespace App\Listeners;
 
 use App\Attribute\Format;
 use App\Events\ConsoleInitEvent;
+use App\Traits\FormatTrait;
 use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(priority: 10)]
 final class FormatListener {
+
+  use FormatTrait;
 
   public function __invoke(ConsoleInitEvent $event): void {
 
@@ -30,13 +32,12 @@ final class FormatListener {
       $instance = $attributes[0]->newInstance();
       $formatterManager = new FormatterManager();
       $formatterManager->addDefaultFormatters();
-      // @todo deal with formatter options.
-      $formatterOptions = new FormatterOptions();
+      $formatterOptions = new FormatterOptions($this->getConfigurationData($command), $application->getDefinition()->getOptions());
       $inputOptions = $formatterManager->automaticOptions($formatterOptions, $instance->type);
       foreach ($inputOptions as $inputOption) {
         $mode = $this->getPrivatePropValue($inputOption, 'mode');
         $suggestedValues = $this->getPrivatePropValue($inputOption, 'suggestedValues');
-        $command->addOption($inputOption->getName(), $inputOption->getShortcut(), $mode, $inputOption->getDescription(), $instance->default ?: $inputOption->getDefault(), $suggestedValues);
+        $command->addOption($inputOption->getName(), $inputOption->getShortcut(), $mode, $inputOption->getDescription(), $inputOption->getDefault(), $suggestedValues);
       }
     }
   }
