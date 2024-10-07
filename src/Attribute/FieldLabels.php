@@ -20,7 +20,7 @@ class FieldLabels implements FormatterConfigurationItemProviderInterface
     ) {
     }
 
-  public static function getConfigurationItem(\ReflectionAttribute $attribute): array
+  public function getConfigurationItem(\ReflectionAttribute $attribute): array
   {
     $args = $attribute->getArguments();
     return [self::KEY => $args['labels']];
