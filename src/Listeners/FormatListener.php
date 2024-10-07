@@ -16,6 +16,10 @@ final class FormatListener {
 
   use FormatTrait;
 
+  public function __construct(
+    private FormatterManager $formatterManager
+  ) {}
+
   public function __invoke(ConsoleInitEvent $event): void {
 
     $application = $event->getApplication();
@@ -30,10 +34,8 @@ final class FormatListener {
         continue;
       }
       $instance = $attributes[0]->newInstance();
-      $formatterManager = new FormatterManager();
-      $formatterManager->addDefaultFormatters();
       $formatterOptions = new FormatterOptions($this->getConfigurationData($command), $application->getDefinition()->getOptions());
-      $inputOptions = $formatterManager->automaticOptions($formatterOptions, $instance->type);
+      $inputOptions = $this->formatterManager->automaticOptions($formatterOptions, $instance->type);
       foreach ($inputOptions as $inputOption) {
         $mode = $this->getPrivatePropValue($inputOption, 'mode');
         $suggestedValues = $this->getPrivatePropValue($inputOption, 'suggestedValues');

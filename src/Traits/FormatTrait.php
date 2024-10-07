@@ -3,21 +3,22 @@
 namespace App\Traits;
 
 use App\Interfaces\FormatterConfigurationItemProviderInterface;
-use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Symfony\Component\Console\Command\Command;
 
+/**
+ * @todo It is assumed that $this->>formatterManager is available on the class using this trait.
+ */
 trait FormatTrait {
 
   /**
    * Format the structured data as per user input and the command definition.
    */
   public function format($output, $input, $data, $format) {
-    $formatterManager = new FormatterManager();
     $configurationData = $this->getConfigurationData($this);
     $formatterOptions = new FormatterOptions($configurationData, $input->getOptions());
     $formatterOptions->setInput($input);
-    $formatterManager->write($output, $format, $data, $formatterOptions);
+    $this->formatterManager->write($output, $format, $data, $formatterOptions);
   }
 
   /**

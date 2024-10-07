@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Consolidation\OutputFormatters\FormatterManager;
 use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -29,14 +30,22 @@ return static function (ContainerConfigurator $container): void {
       ->alias(EventDispatcherInterface::class, 'event_dispatcher')
       ->alias(PsrEventDispatcherInterface::class, 'event_dispatcher');
 
+    $container->services()
+      ->set('formatter_manager', FormatterManager::class)
+      ->call('addDefaultFormatters')
+      ->call('addDefaultSimplifiers')
+      ->public()
+      ->tag('container.hot_path')
+      ->alias(FormatterManager::class, 'formatter_manager');
+
     // this parameter is used at compile time in RegisterListenersPass
     $container->parameters()->set('event_dispatcher.event_aliases', array_merge(
     class_exists(ConsoleEvents::class) ? ConsoleEvents::ALIASES : [],
     ));
 
-    $services->load('App\\Commands\\', 'Commands/*/*Command.php')->tag('console.command');
-    $services->load('App\\Commands\\', 'Commands/*Command.php')->tag('console.command');
+    $services->load('App\\Commands\\', 'Commands/*/*Command.php')->tag('console.command')->autowire()->autoconfigure();
+    $services->load('App\\Commands\\', 'Commands/*Command.php')->tag('console.command')->autowire()->autoconfigure();
 
     $services->load('App\\Listeners\\', 'Listeners/*Listener.php')
-      ->tag('kernel.event_listener'); // ->autoconfigure(TRUE)
+      ->tag('kernel.event_listener')->autowire();
 };

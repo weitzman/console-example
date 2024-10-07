@@ -14,6 +14,7 @@ use App\Attribute\Format;
 use App\Attribute\Option;
 use App\Attribute\OptionsetGetEditor;
 use App\Traits\FormatTrait;
+use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -39,6 +40,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UserInformationCommand extends Command {
 
   use FormatTrait;
+
+  public function __construct(
+    private FormatterManager $formatterManager
+  ) {
+    parent::__construct();
+  }
 
   public function execute(InputInterface $input, OutputInterface $output): int
   {
