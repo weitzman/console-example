@@ -8,6 +8,8 @@ use Attribute;
 #[Attribute(Attribute::TARGET_METHOD|Attribute::TARGET_CLASS)]
 class DefaultTableFields implements FormatterConfigurationItemProviderInterface
 {
+    const KEY = 'default-table-fields';
+
     /**
      * @param $fields
      *   An array of field names to show by default when using table formatter.
@@ -20,6 +22,6 @@ class DefaultTableFields implements FormatterConfigurationItemProviderInterface
     public static function getConfigurationItem(\ReflectionAttribute $attribute): array
     {
         $args = $attribute->getArguments();
-        return ['default-table-fields' => $args['fields']];
+        return [self::KEY => $args['fields']];
     }
 }

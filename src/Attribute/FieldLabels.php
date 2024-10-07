@@ -8,6 +8,9 @@ use Attribute;
 #[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 class FieldLabels implements FormatterConfigurationItemProviderInterface
 {
+
+    const KEY = 'field-labels';
+
     /**
      * @param $labels
      *   An associative array of field names and labels for display.
@@ -20,6 +23,6 @@ class FieldLabels implements FormatterConfigurationItemProviderInterface
   public static function getConfigurationItem(\ReflectionAttribute $attribute): array
   {
     $args = $attribute->getArguments();
-    return ['field-labels' => $args['labels']];
+    return [self::KEY => $args['labels']];
   }
 }
