@@ -6,12 +6,11 @@ namespace App\Listeners;
 
 use App\Attribute\ConfirmEnvironment;
 use App\Attribute\ForbidEnvironment;
-use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener(event: ConsoleEvents::COMMAND)]
+#[AsEventListener()]
 final readonly class PolicyEnvironmentListener
 {
     public function __construct(

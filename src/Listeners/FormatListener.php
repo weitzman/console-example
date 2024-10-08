@@ -12,7 +12,7 @@ use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(priority: 10)]
-final class FormatListener {
+class FormatListener {
 
   use FormatTrait;
 
