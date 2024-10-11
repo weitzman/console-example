@@ -6,7 +6,7 @@ namespace App\Listeners;
 
 use App\Attribute\Format;
 use App\Events\ConsoleInitEvent;
-use App\Traits\FormatTrait;
+use App\Traits\FormatterOptionsTrait;
 use Consolidation\OutputFormatters\FormatterManager;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -14,7 +14,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(priority: 10)]
 class FormatListener {
 
-  use FormatTrait;
+  use FormatterOptionsTrait;
 
   public function __construct(
     private FormatterManager $formatterManager
@@ -35,7 +35,8 @@ class FormatListener {
       }
       $instance = $attributes[0]->newInstance();
       $formatterOptions = new FormatterOptions($this->getConfigurationData($command), $application->getDefinition()->getOptions());
-      $inputOptions = $this->formatterManager->automaticOptions($formatterOptions, $instance->type);
+      $reflection = new \ReflectionMethod($command, 'doExecute');
+      $inputOptions = $this->formatterManager->automaticOptions($formatterOptions, $instance->type ?: $reflection->getReturnType());
       foreach ($inputOptions as $inputOption) {
         $mode = $this->getPrivatePropValue($inputOption, 'mode');
         $suggestedValues = $this->getPrivatePropValue($inputOption, 'suggestedValues');

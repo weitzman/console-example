@@ -29,21 +29,21 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 // #[Argument(name: 'names', description: 'A comma delimited list of user names.')]
 // #[Option(name: 'uids', description: 'A comma delimited list of user ids to lookup (an alternative to names')]
-#[Format(type: RowsOfFields::class, default: 'table')]
+#[Format(default: 'table')]
 #[OptionsetGetEditor]
 //#[InteractUserNames(choices: ['alice', 'bob', 'carol'], argumentName: 'names')]
 #[FieldLabels(labels: ['name' => 'Name', 'color' => 'Color'])]
 #[DefaultTableFields(fields: ['name', 'color'])]
 #[FilterDefaultField(field: 'name')]
 #[ConfirmEnvironment('dev')]
-#[ForbidEnvironment('prod')]
+#[ForbidEnvironment('prod')] // How to add to a built-in command?
 // @todo Deal with usages (built-in), topics (custom).
 class UserInformationCommand extends Command {
 
   use FormatTrait;
 
   public function __construct(
-    private FormatterManager $formatterManager
+    private FormatterManager $formatterManager,
   ) {
     parent::__construct();
   }
@@ -67,13 +67,11 @@ class UserInformationCommand extends Command {
     }
   }
 
-  public function execute(InputInterface $input, OutputInterface $output): int
+  protected function doExecute(InputInterface $input, OutputInterface $output): RowsOfFields
   {
     $io = new SymfonyStyle($input, $output);
     $names = $input->getArgument('names');
     $io->writeln("Hi $names");
-    $data = new RowsOfFields([['name' => 'apple', 'color' => 'red']]);
-    $this->format($output, $input, $data, $input->getOption('format'));
-    return Command::SUCCESS;
+    return new RowsOfFields([['name' => 'apple', 'color' => 'red']]);
   }
 }

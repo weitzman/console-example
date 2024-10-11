@@ -2,39 +2,33 @@
 
 namespace App\Traits;
 
-use App\Interfaces\FormatterConfigurationItemProviderInterface;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @todo It is assumed that $this->>formatterManager is available on the class using this trait.
+ * It is assumed that $this->formatterManager is available on the class using this trait.
  */
 trait FormatTrait {
+
+  use FormatterOptionsTrait;
 
   /**
    * Format the structured data as per user input and the command definition.
    */
-  public function format($output, $input, $data, $format) {
+  public function execute(InputInterface $input, OutputInterface $output): int {
     $configurationData = $this->getConfigurationData($this);
     $formatterOptions = new FormatterOptions($configurationData, $input->getOptions());
     $formatterOptions->setInput($input);
-    $this->formatterManager->write($output, $format, $data, $formatterOptions);
+    $data = $this->doExecute($input, $output);
+    $this->formatterManager->write($output, $input->getOption('format'), $data, $formatterOptions);
+    return Command::SUCCESS;
   }
 
   /**
-   * Build the formatter configuration from the command's attributes
+   * Override this method with the actual command logic. Type hint the return value
+   * to help the formatter know what to expect.
    */
-  public function getConfigurationData(Command $command): array {
-    $configurationData = [];
-    $reflection = new \ReflectionObject($command);
-    $attributes = $reflection->getAttributes();
-    foreach ($attributes as $attribute) {
-      $instance = $attribute->newInstance();
-      if ($instance instanceof FormatterConfigurationItemProviderInterface) {
-        $configurationData = array_merge($configurationData, $instance->getConfigurationItem($attribute));
-      }
-    }
-    return $configurationData;
-  }
-
+  abstract protected function doExecute(InputInterface $input, OutputInterface $output);
 }
